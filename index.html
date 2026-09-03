@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calendario de Efemérides de Salud 2026</title>
+  <style>
+    :root { --ink:#16324f; --muted:#5e7184; --brand:#087f8c; --brand-dark:#075c68; --surface:#ffffff; --canvas:#eef8f7; --line:#d3e5e6; --gold:#f2b84b; --mint:#dff3ee; --navy:#16324f; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:linear-gradient(135deg,#eef8f7 0%,#f8fbfc 55%,#eaf1f8 100%); color:var(--ink); line-height:1.55; padding:28px 16px 44px; }
+    .container { max-width:1000px; margin:auto; }
+    .hero { text-align:center; padding:24px 20px 22px; }
+    .eyebrow { margin:0 0 8px; color:var(--brand); font-size:.78rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+    h1 { margin:0; color:var(--ink); font-size:clamp(2rem,5vw,3.4rem); line-height:1.08; }
+    .intro { max-width:720px; margin:16px auto 0; color:var(--muted); font-size:1.05rem; }
+    .source-panel, .filter-panel { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px 20px; margin:0 0 18px; box-shadow:0 12px 30px rgba(24,50,75,.07); }
+    .filter-panel { border-top:5px solid var(--brand); }
+    .filter-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
+    .filter-heading strong { display:block; margin-bottom:4px; }
+    .filter-heading p { margin:0; color:var(--muted); font-size:.9rem; }
+    .filter-grid { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(190px,.8fr) auto; gap:10px; align-items:end; }
+    .field label { display:block; color:var(--ink); font-size:.78rem; font-weight:800; margin-bottom:5px; }
+    .field input, .field select { width:100%; border:1px solid #b9d9dc; border-radius:10px; padding:11px 12px; background:#fbfefe; color:var(--ink); font:inherit; }
+    .field input:focus, .field select:focus { outline:3px solid rgba(242,184,75,.45); border-color:var(--brand); }
+    .filter-actions { display:flex; gap:8px; }
+    .filter-actions button:first-child { background:var(--brand); color:#fff; border-color:var(--brand); }
+    .filter-actions button:first-child:hover { background:var(--brand-dark); }
+    .results-count { margin:12px 0 0; color:var(--muted); font-size:.88rem; }
+    .no-results { display:none; background:#fff8dc; border:1px solid #efd27e; border-radius:12px; padding:16px; color:#7b5a18; text-align:center; }
+    .day.is-hidden, .month.is-hidden { display:none; }
+    .category-badge { display:inline-flex; align-items:center; border-radius:999px; padding:3px 8px; background:#e3f4f1; color:var(--brand-dark); font-size:.72rem; font-weight:800; letter-spacing:.02em; }
+    .day > .source-link { order:5; }
+    .source-panel strong { display:block; margin-bottom:6px; }
+    .source-panel p { margin:0 0 10px; color:var(--muted); font-size:.94rem; }
+    .source-links { display:flex; flex-wrap:wrap; gap:8px; }
+    .source-links a, .source-link { color:var(--brand-dark); font-weight:700; text-decoration:none; }
+    .source-links a { border:1px solid #b9d9dc; border-radius:999px; padding:6px 10px; font-size:.84rem; }
+    .source-links a:hover, .source-link:hover { background:#e9f7f7; text-decoration:underline; }
+    .toolbar { display:flex; justify-content:flex-end; gap:8px; margin:0 0 12px; }
+    button { cursor:pointer; border:1px solid #b9d9dc; background:#fff; color:var(--brand-dark); border-radius:9px; padding:8px 12px; font:inherit; font-size:.85rem; font-weight:700; }
+    button:hover { background:#e9f7f7; }
+    .month { background:rgba(255,255,255,.92); border:1px solid var(--line); border-left:7px solid var(--brand); border-radius:14px; margin:0 0 12px; overflow:hidden; box-shadow:0 6px 18px rgba(24,50,75,.05); }
+    .month[open] { border-left-color:var(--gold); }
+    summary { list-style:none; cursor:pointer; padding:17px 20px; color:var(--brand-dark); font-size:1.25rem; font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    summary::-webkit-details-marker { display:none; }
+    summary::after { content:'＋'; font-size:1.35rem; color:var(--brand); transition:transform .2s ease; }
+    details[open] summary::after { content:'−'; }
+    summary:focus-visible, button:focus-visible, a:focus-visible { outline:3px solid #f2b84b; outline-offset:3px; }
+    .day { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 14px 9px; padding:11px 13px; background:#f8fbfc; border:1px solid #e6eff0; border-radius:10px; transition:transform .2s ease, box-shadow .2s ease; }
+    .day:last-child { margin-bottom:16px; }
+    .day:hover { transform:translateX(3px); box-shadow:0 4px 12px rgba(24,50,75,.08); }
+    .day > span:first-child { font-weight:800; }
+    .highlight { color:#9c631f; background:#fff8dc; }
+    .national { color:#2d3748; background:#eef1f5; }
+    .international { color:#1c5b90; background:#e8f4ff; }
+    .conditional { font-size:.88em; }
+    .source-link { margin-left:auto; font-size:.8rem; white-space:nowrap; }
+    footer { text-align:center; margin-top:28px; padding:20px 12px 0; border-top:1px solid var(--line); color:var(--muted); font-size:.88rem; }
+    footer p { margin:5px 0; }
+    @media (max-width:760px) { .filter-grid { grid-template-columns:1fr; } .filter-actions { justify-content:flex-start; } }
+    @media (max-width:600px) { body { padding:14px 10px 30px; } .hero { padding:18px 8px; } .day { align-items:flex-start; } .source-link { width:100%; margin-left:0; } summary { padding:15px; } .filter-heading { display:block; } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header class="hero"><p class="eyebrow">Agenda sanitaria · Chile · 2026</p><h1>Calendario de Efemérides de Salud</h1><p class="intro">Consulta las fechas por mes y abre cada panel para acceder a una referencia informativa sobre el origen o propósito de la conmemoración.</p></header>
+  <aside class="source-panel" aria-label="Fuentes generales">
+    <strong>Fuentes generales de consulta</strong>
+    <p>Los enlaces individuales dirigen a búsquedas en Wikipedia en español; estas fuentes institucionales ayudan a contrastar las fechas y el propósito de las campañas sanitarias.</p>
+    <nav class="source-links">
+      <a href="https://www.who.int/campaigns" target="_blank" rel="noopener noreferrer">OMS · campañas y días mundiales</a>
+      <a href="https://www.paho.org/es/celebraciones" target="_blank" rel="noopener noreferrer">OPS · celebraciones de salud</a>
+      <a href="https://www.un.org/es/observances/health" target="_blank" rel="noopener noreferrer">ONU · observancias de salud</a>
+      <a href="https://es.wikipedia.org/wiki/Anexo:D%C3%ADas_mundiales" target="_blank" rel="noopener noreferrer">Wikipedia · días mundiales</a>
+    </nav>
+  </aside>
+  <section class="filter-panel" aria-labelledby="filter-title">
+    <div class="filter-heading">
+      <div><strong id="filter-title">Buscar y filtrar efemérides</strong><p>Combina una palabra clave con una categoría médica para encontrar fechas específicas.</p></div>
+      <span class="category-badge">Salud y bienestar</span>
+    </div>
+    <div class="filter-grid">
+      <div class="field"><label for="keyword-search">Palabra clave</label><input id="keyword-search" type="search" placeholder="Ej.: cáncer, salud mental, donación…" autocomplete="off" /></div>
+      <div class="field"><label for="category-filter">Categoría médica</label><select id="category-filter"><option value="all">Todas las categorías</option><option value="cancer">Cáncer y oncología</option><option value="salud-mental">Salud mental</option><option value="enfermedades-cronicas">Enfermedades crónicas</option><option value="prevencion">Prevención y promoción</option><option value="salud-sexual">Salud sexual y reproductiva</option><option value="profesionales">Profesionales y servicios</option><option value="discapacidad">Discapacidad y rehabilitación</option><option value="infecciosas">Enfermedades infecciosas</option><option value="otros">Otras temáticas</option></select></div>
+      <div class="filter-actions"><button type="button" id="clear-filters">Limpiar</button></div>
+    </div>
+    <p class="results-count" id="results-count" role="status" aria-live="polite"></p>
+  </section>
+  <div class="no-results" id="no-results">No se encontraron efemérides con esos criterios. Prueba con otra palabra o categoría.</div>
+  <div class="toolbar" aria-label="Controles del calendario">
+    <button type="button" id="open-all">Abrir todos</button>
+    <button type="button" id="close-all">Cerrar todos</button>
+  </div>
+  
+  <!-- ENERO -->
+  <details class="month" id="enero">
+    <summary>Enero</summary>
+    <div class="day"><span class="highlight">7-Ene</span> Día del Reanimador SAMU</div>
+    <div class="day"><span class="international">13-Ene</span> Día Mundial de la Lucha contra la Depresión</div>
+    <div class="day"><span class="international conditional">26-Ene </span> Día Mundial de la Lepra (último domingo)</div>
+  </details>
+
+  <!-- FEBRERO -->
+  <details class="month" id="febrero">
+    <summary>Febrero -  Mes de la Preveción del Cáncer</summary>
+    <div class="day"><span class="international">04-Feb</span> Día Mundial Contra el Cáncer</div>
+    <div class="day"><span class="international">13-Feb</span> Día Internacional del condón</div>
+    <div class="day"><span class="international">14-Feb</span> Día Internacional de las Cardiopatías Congénitas</div>
+    <div class="day"><span class="international">15-Feb</span> Día Internacional contra el Cáncer Infantil</div>
+    <div class="day"><span class="national">15-Feb</span> Día Nacional del Brigadista Forestal</div>
+    <div class="day"><span class="international">27-Feb</span> Día Internacional del Transplante de Órganos y Tejidos</div>
+    <div class="day"><span class="international conditional">28-Feb </span> Día Mundial de las Enfermedades Raras (último día)</div>
+  </details>
+
+  <!-- MARZO -->
+  <details class="month" id="marzo">
+    <summary>Marzo</summary>
+    <div class="day"><span class="highlight">02-Mar</span> Aniversario promulgación Ley TEA</div>
+    <div class="day"><span class="international">03-Mar</span> Día Mundial de Salud Auditiva</div>
+    <div class="day"><span class="international">03-Mar</span> Día Mundial de las Malformaciones Congénitas</div>
+    <div class="day"><span class="highlight">04-Mar</span> Día Mundial de la Obesidad</div>
+    <div class="day"><span class="highlight">04-Mar</span> Día de las Frutas y Verduras</div>
+    <div class="day"><span class="international">07-Mar</span> Día del Experto en Prevención de Riesgos</div>
+    <div class="day"><span class="national">08-Mar</span> Día Internacional de la Mujer</div>
+    <div class="day"><span class="international">12-Mar</span> Día Mundial del Glaucoma</div>
+    <div class="day"><span class="international">13-Mar</span> Día Mundial del Riñón (2do jueves)</div>
+    <div class="day"><span class="international">14-Mar</span> Día Mundial de la Endometriosis</div>
+    <div class="day"><span class="international">14-Mar</span> Día Mundial del Sueño</div>
+    <div class="day"><span class="highlight">18-Mar</span> Día Internacional de la Artritis Idiopática Juvenil</div>
+    <div class="day"><span class="national">19-Mar</span> Día del Auxiliar del Servicio</div>
+    <div class="day"><span class="international">20-Mar</span> Día Mundial de la Salud Bucal</div>
+    <div class="day"><span class="highlight">21-Mar</span> Día Mundial del Síndrome de Down</div>
+    <div class="day"><span class="national">21-Mar</span> Día Nacional de Conmemoración de las Personas Fallecidas Producto de la Pandemia de COVID-19</div>
+    <div class="day"><span class="international">22-Mar</span> Día Mundial del Agua</div>
+    <div class="day"><span class="highlight">23-Mar</span> Dia Mundial de la Rehabilitación Motriz</div>
+    <div class="day"><span class="international">24-Mar</span> Día Mundial contra la Tuberculosis</div>
+    <div class="day"><span class="highlight">26-Mar</span> Día Mundial del Cáncer Cervicouterino</div>
+    <div class="day"><span class="highlight">26-Mar</span> Día Mundial para la Concientización de la Epilepsia</div>
+    <div class="day"><span class="national">26-Mar</span> Día del TENS</div>
+    <div class="day"><span class="international">30-Mar</span> Día del Trastorno Bipolar</div>
+    <div class="day"><span class="highlight">31-Mar</span> Día Mundial Contra el Cáncer de Colon</div>
+    <div class="day"><span class="national">31-Mar</span> Día de la Visibilidad Transgénero</div>
+  </details>
+
+  <!-- ABRIL -->
+  <details class="month" id="abril">
+    <summary>Abril</summary>
+    <div class="day"><span class="highlight">01-Abr</span> Aniversario Instituto de Salud Pública de Chile</div>
+    <div class="day"><span class="international">02-Abr</span> Día Mundial de la Concienciación sobre el Autismo</div>
+    <div class="day"><span class="national">05-Abr</span> Día del Terapeuta Ocupacional</div>
+    <div class="day"><span class="international">06-Abr</span> Día Internacional de la Actividad Física</div>
+    <div class="day"><span class="highlight">07-Abr</span> Día Mundial de la Salud</div>
+    <div class="day"><span class="international">11-Abr</span> Día Mundial del Parkinson</div>
+    <div class="day"><span class="international">14-Abr</span> Día Mundial de la enfermedad de Chagas</div>
+    <div class="day"><span class="international">16-Abr</span> Día Mundial de la Voz</div>
+    <div class="day"><span class="international">17-Abr</span> Día Mundial de la Hemofilia</div>
+    <div class="day"><span class="highlight conditional">19-26-Abr (Semana)</span> Semana de Vacunación en las Américas</div>
+    <div class="day"><span class="international">25-Abr</span> Día Mundial del Paludismo</div>
+    <div class="day"><span class="highlight conditional">28-Abr</span> Día Mundial de la Seguridad y la Salud en el Trabajo (último miércoles)</div>
+    <div class="day"><span class="national">29-Abr</span> Dia Nacional de los Trabajadores y Trabajadoras del Sistema de Salud</div>
+  </details>
+
+  <!-- MAYO -->
+  <details class="month" id="mayo">
+    <summary>Mayo</summary>
+    <div class="day"><span class="international">01-May</span> Día Internacional de los Trabajadores</div>
+    <div class="day"><span class="international">05-May</span> Día Mundial de la Higiene de Manos</div>
+    <div class="day"><span class="international">05-May</span> Día Mundial del Cáncer de Vejiga</div>
+    <div class="day"><span class="international">05-May</span> Día Internacional del Celíaco</div>
+    <div class="day"><span class="national">06-May</span> Día Nacional del Laboratorista Dental</div>
+    <div class="day"><span class="national">06-May</span> Día del Kinesiólogo</div>
+    <div class="day"><span class="national">06-May</span> Día del Nutricionista</div>
+    <div class="day"><span class="international conditional">(1er martes)</span> Día Mundial del Asma</div>
+    <div class="day"><span class="international">08-May</span> Día Mundial del Cáncer de Ovario</div>
+    <div class="day"><span class="highlight international">08-May</span> Día Mundial de la Cruz Roja</div>
+    <div class="day"><span class="international">10-May</span> Día Mundial del Lupus</div>
+    <div class="day"><span class="national">12-May</span> Día Internacional de la Enfermería</div>
+    <div class="day"><span class="highlight international">12-May</span> Día Internacional de la Fibromialgia</div>
+    <div class="day"><span class="international">17-May</span> Día Internacional Contra la Homofobia y Transfobia</div>
+    <div class="day"><span class="highlight international">17-May</span> Día Mundial de la Hipertensión</div>
+    <div class="day"><span class="international">19-May</span> Día de la Enfermedad de Crohn</div>
+    <div class="day"><span class="national">19-May</span> Día Mundial del Médico de Familia</div>
+    <div class="day"><span class="highlight international">23-May</span> Día Mundial del Melanoma</div>
+    <div class="day"><span class="international">28-May</span> Día Internacional de Acción por la Salud de las Mujeres</div>
+    <div class="day"><span class="highlight international">30-May</span> Día Mundial de la Esclerosis Múltiple</div>
+    <div class="day"><span class="international conditional">31-May</span> Día Mundial sin Tabaco</div>
+  </details>
+
+  <!-- JUNIO -->
+  <details class="month" id="junio">
+    <summary>Junio</summary>
+    <div class="day"><span class="international">01-Jun</span> Día Mundial de la Leche</div>
+    <div class="day"><span class="national">01-Jun</span> Día del Operador Radiotelefónico de SAMU</div>
+    <div class="day"><span class="international">06-Jun</span> Día Mundial de los Trasplantados</div>
+    <div class="day"><span class="highlight conditional">07-Jun</span> Día Nacional de la Concientización del Síndrome de Tourette</div>
+    <div class="day"><span class="international">07-Jun</span> Día Mundial de la Inocuidad de los Alimentos</div>
+    <div class="day"><span class="international">08-Jun</span> Día Internacional de los Tumores Cerebrales</div>
+    <div class="day"><span class="highlight international">11-Jun</span> Día Mundial del Cáncer de Próstata</div>
+    <div class="day"><span class="international">13-Jun</span> Día Mundial del Cáncer de Piel</div>
+    <div class="day"><span class="national">14-Jun</span> Día Mundial del Donante de Sangre</div>
+    <div class="day"><span class="highlight conditional">19-Jun </span> Día Mundial del Cáncer de Riñón (3er jueves)</div>
+    <div class="day"><span class="national">18-Jun</span> Día del Orgullo Autista</div>
+    <div class="day"><span class="highlight conditional">24-Jun</span> Día Nacional de los Pueblos Indígenas</div>
+    <div class="day"><span class="international">26-Jun</span> Día Internacional de la Lucha contra el uso Indebido y el Tráfico Ilícito de Drogas</div>
+    <div class="day"><span class="highlight conditional">26-Jun</span> Día Nacional de la Concientización de la Esclerosis Múltiple, Esclerosis Lateral Amiotrófica y Otras Enfermedades Desmielinizantes</div>
+    <div class="day"><span class="national conditional">28-Jun</span> Día Internacional del Orgullo LGBTIQA+</div>
+    <div class="day"><span class="national">30-Jun</span> Día del Bombero</div>
+  </details>
+
+  <!-- JULIO -->
+  <details class="month" id="julio">
+    <summary>Julio</summary>
+    <div class="day"><span class="international">06-Jul</span> Día Mundial de la Zoonosis</div>
+    <div class="day"><span class="national">11-Jul</span> Día del Periodista</div>
+    <div class="day"><span class="highlight international">13-Jul</span> Día Internacional del Sarcoma y Osteosarcoma</div>
+    <div class="day"><span class="international conditional">24-Jul</span> Día Internacional del Autocuidado</div>
+    <div class="day"><span class="highlight international">28-Jul</span> Día Mundial Contra la Hepatitis</div>
+    <div class="day"><span class="national">29-Jul</span> Día Nacional del Auxiliar De Alimentación</div>
+  </details>
+
+  <!-- AGOSTO -->
+  <details class="month" id="agosto">
+    <summary>Agosto - Mes del corazón</summary>
+    <div class="day"><span class="international">01-07-Ago</span> Semana Mundial de la Lactancia Materna</div>
+    <div class="day"><span class="national">03-Ago</span> Aniversario creación Servicios de Salud</div>
+	<div class="day"><span class="national">03-Ago</span> Aniversario Fonasa</div>
+    <div class="day"><span class="national">03-Ago</span> Aniversario Cenabast</div>
+    <div class="day"><span class="national">11-Ago</span> Dia del Arsenalero-Instrumentistas Quirúrgicos</div>
+    <div class="day"><span class="international conditional">20-Ago</span> Día Mundial del Mosquito</div>
+    <div class="day"><span class="international">26-Ago</span> Dia Mundial del Dengue</div>
+    <div class="day"><span class="national">27-Ago</span> Día Del Educador Para La Salud</div>
+    <div class="day"><span class="national">28-Ago</span> Día Del Conductor De Vehículos Asistenciales de Servicios De Salud</div>
+    <div class="day"><span class="national">28-Ago</span> Día del Funcionario Administrativo</div>
+    <div class="day"><span class="highlight conditional">30-Ago</span> Aniversario Servicio Médico Legal</div>
+    <div class="day"><span class="national">31-Ago</span> Día Nacional de la Matrona</div>
+  </details>
+
+  <!-- SEPTIEMBRE -->
+  <details class="month" id="septiembre">
+    <summary>Septiembre - Mes prevención del Suicidio</summary>
+    <div class="day"><span class="highlight conditional">01-Sept</span> Aniversario Copago Cero</div>
+    <div class="day"><span class="international">04-Sept</span> Día Mundial de la Salud Sexual</div>
+    <div class="day"><span class="highlight international">05-Sept</span> Día Mundial del Mieloma Múltiple</div>
+    <div class="day"><span class="national">06-Sept</span> Día de la Atención Primaria de Salud</div>
+    <div class="day"><span class="international">07-Sept</span> Día del Epidemióloga de Campo</div>
+    <div class="day"><span class="highlight conditional">08-Sept </span> Día Del SAMU</div>
+    <div class="day"><span class="international conditional">08-Sept</span> Día Mundial de la Fibrosis Quística</div>
+    <div class="day"><span class="highlight international">08-Sept</span> Día Mundial de La Fisioterapia</div>
+    <div class="day"><span class="international conditional">10-Sept</span> Día Mundial para la Prevención del Suicidio</div>
+    <div class="day"><span class="national">14-Sept</span> Día Nacional del Asistente Médico Administrativo</div>
+    <div class="day"><span class="international">15-Sept</span> Día Mundial del Linfoma</div>
+    <div class="day"><span class="highlight international">16-Sept</span> Día Internacional del Condón interno</div>
+    <div class="day"><span class="international conditional">17-Sept</span> Día Mundial de la Seguridad del Paciente</div>
+    <div class="day"><span class="highlight international">18-Sept</span> Fiestas Patrias</div>
+    <div class="day"><span class="international conditional">21-Sept</span>Día Mundial del Alzheimer</div>
+    <div class="day"><span class="international">22-Sept</span> Día Mundial de la Leucemia</div>
+    <div class="day"><span class="highlight international">24-Sept</span> Dia Mundial del Cáncer de Tiroides</div>
+    <div class="day"><span class="international conditional">26-Sept</span> Día Mundial de Prevención Embarazo no Planificado en Adolescentes (Semana)</div>
+    <div class="day"><span class="national">27-Sept</span> Día del Odontólogo</div>
+    <div class="day"><span class="highlight national">27-Sept</span> Día Nacional del Donante de Órganos y Tejidos del Cuerpo Humano</div>
+    <div class="day"><span class="international conditional">28-Sept</span>Día Mundial Contra la Rabia (Último domingo)</div>
+    <div class="day"><span class="highlight international">29-Sept</span> Día Mundial del Corazón</div>
+    <div class="day"><span class="international conditional">28-Sept (Último domingo)</span>  Día Mundial de las personas sordas</div>
+  </details>
+
+  <!-- OCTUBRE -->
+  <details class="month" id="octubre">
+    <summary>Octubre - Mes sensibilización del Cancer de Mama</summary>
+    <div class="day"><span class="international">01-Oct</span> Día Internacional de las Personas Mayores</div>
+    <div class="day"><span class="international">02-Oct</span> Día Mundial del Cáncer de Estómago</div>
+    <div class="day"><span class="national">02-Oct</span> Día del Tecnólogo Médico</div>
+    <div class="day"><span class="highlight conditional">03-Oct</span> Dia de la Meningitis</div>
+    <div class="day"><span class="national">07-Oct</span> Día del Médico Veterinario</div>
+    <div class="day"><span class="international conditional">09-Oct</span> Día Mundial de la Visión (Segundo jueves)</div>
+    <div class="day"><span class="highlight international">10-Oct</span> Día Mundial de la Salud Mental</div>
+    <div class="day"><span class="international">11-Oct</span> Día Mundial de los Cuidados Paliativos</div>
+    <div class="day"><span class="international">12-Oct</span> Día Mundial de las Enfermedades Reumáticas</div>
+    <div class="day"><span class="highlight conditional">12-Oct</span> Día Estadístico en Salud</div>
+    <div class="day"><span class="national">14-Oct</span> Aniversario Ministerio de Salud</div>
+    <div class="day"><span class="international conditional">15-Oct</span> Día Mundial del Lavado de Manos</div>
+    <div class="day"><span class="highlight international">16-Oct</span> Día Mundial de la Alimentación</div>
+    <div class="day"><span class="national conditional">17-Oct</span> Día Seremis de Salud</div>
+    <div class="day"><span class="highlight national">17-Oct</span> Día del Auxiliar De Farmacia</div>
+    <div class="day"><span class="international conditional">17-Oct</span>  Día Mundial contra el Dolor</div>
+    <div class="day"><span class="highlight international">18-Oct</span> Día Mundial de la Menopausia</div>
+    <div class="day"><span class="international conditional">19-Oct</span> Día Internacional del Cáncer de Mama</div>
+    <div class="day"><span class="highlight international">20-Oct</span> Día Mundial de la Osteoporosis</div>
+    <div class="day"><span class="national conditional">21-Oct</span> Día de la Despatoligización Trans</div>
+    <div class="day"><span class="international">24-Oct</span> Día Mundial de la Polio</div>
+    <div class="day"><span class="national">28-Oct</span> Día de los Funcionarios Municipales</div>
+    <div class="day"><span class="highlight international conditional">29-Oct</span> Día Mundial del Accidente Cerebrovascular ACV</div>
+    <div class="day"><span class="international conditional">29-Oct</span> Día Internacional de los Cuidados y el Apoyo</div>
+    <div class="day"><span class="national conditional">31-Oct</span> Día Nacional de las Manipuladoras y Manipuladores de Alimentos (Último viernes)</div>
+  </details>
+
+  <!-- NOVIEMBRE -->
+  <details class="month" id="noviembre">
+    <summary>Noviembre</summary>
+    <div class="day"><span class="international">08-Nov</span> Día Mundial de la Radiología</div>
+    <div class="day"><span class="national">11-Nov</span> Día del Trabajador Social</div>
+    <div class="day"><span class="highlight international">12-Nov</span> Día Mundial de la Neumonía</div>
+    <div class="day"><span class="international conditional">14-Nov</span>  Día Mundial de la Diabetes (Día Mundial)</div>
+    <div class="day"><span class="highlight international">17-Nov</span> Día Mundial de la Prematuridad</div>
+    <div class="day"><span class="international conditional">17-Nov</span>  Día Mundial del Cáncer de Pulmón</div>
+    <div class="day"><span class="highlight international">18-24-Nov (Semana)</span> Semana Mundial de Concientización sobre la resistencia a los antimicrobianos</div>
+    <div class="day"><span class="international conditional">19-Nov</span> Día Mundial de la EPOC (Tercer miércoles)</div>
+    <div class="day"><span class="highlight international">21-Nov</span> Día Mundial de la Espina Bífida</div>
+    <div class="day"><span class="national conditional">22-Nov (Trasplante)</span> Día Nacional del Trasplante</div>
+    <div class="day"><span class="highlight international">22-Nov</span> Día Fonoaudiólogo</div>
+    <div class="day"><span class="international conditional">25-Nov</span> Día del Paramédico y TENS</div>
+  </details>
+
+  <!-- DICIEMBRE -->
+  <details class="month" id="diciembre">
+    <summary>Diciembre</summary>
+    <div class="day"><span class="highlight international">01-Dic</span> Día Mundial del Sida</div>
+    <div class="day"><span class="national">01-Dic</span> Día del Bioquímico (Químico Farmacéutico Panamericano)</div>
+    <div class="day"><span class="national">02-Dic</span> Día del Asistente Dental</div>
+    <div class="day"><span class="highlight international">02-Dic</span> Aniversario de la OPS</div>
+    <div class="day"><span class="international">03-Dic</span> Día Internacional de las Personas con Discapacidad</div>
+    <div class="day"><span class="national">03-Dic</span> Día del Médico</div>
+    <div class="day"><span class="highlight conditional">03-Dic</span>Día de la Secretaría/o</div>
+    <div class="day"><span class="international conditional">05-Dic</span>Día Mundial de la Lucha contra el Cáncer Oral</div>
+    <div class="day"><span class="national">09-Dic</span> Día del Psicólogo</div>
+	<div class="day"><span class="national">09-Dic</span> Día de la informatica</div>
+    <div class="day"><span class="highlight international">10-Dic</span> Día Internacional de los DD.HH</div>
+    <div class="day"><span class="international conditional">12-Dic</span> Día Internacional de la Salud Universal</div>
+    <div class="day"><span class="national">18-Dic</span> Fundación Cruz Roja Chilena</div>
+    <div class="day"><span class="highlight conditional">22-Dic</span> Aniversario Salud Responde</div>
+    <div class="day"><span class="highlight international">25-Dic</span> Navidad</div>
+    <div class="day"><span class="highlight international">31-Dic</span> Año Nuevo</div>
+  </details>
+
+  <!-- Footer -->
+  <footer>
+    <p class="footer-note">Este calendario conserva y actualiza las efemérides del documento original emitido por Minsal el año 2025. Las referencias se ofrecen como enlaces de consulta y pueden conducir a resultados de búsqueda cuando no existe una página única para la conmemoración.</p>
+    <p><strong>Última actualización:</strong> 01 de agosto de 2026</p>
+	<p><strong>Diseño y actualización:</strong> Christian Ocampo G. - Depto. Comunicaciones Estratégicas SSA</p>
+  </footer>
+
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const months = [...document.querySelectorAll('.month')];
+    const days = [...document.querySelectorAll('.day')];
+    const search = document.getElementById('keyword-search');
+    const category = document.getElementById('category-filter');
+    const clear = document.getElementById('clear-filters');
+    const count = document.getElementById('results-count');
+    const empty = document.getElementById('no-results');
+    const normalize = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const classify = text => {
+      const t = normalize(text);
+      if (/cancer|cáncer|tumor|melanoma|linfoma|leucemia|mieloma|osteosarcoma|mama|prostata|próstata|tiroides|colon|cervicouterino|ovario|vejiga|estomago|estómago/.test(t)) return 'cancer';
+      if (/depresion|depresión|sueno|sueño|bipolar|suicidio|salud mental|alzheimer|epilepsia/.test(t)) return 'salud-mental';
+      if (/obesidad|diabetes|hipertension|hipertensión|asma|lupus|crohn|esclerosis|osteoporosis|endometriosis|artritis|reumatic|reumát|cardiopat/.test(t)) return 'enfermedades-cronicas';
+      if (/condon|condón|sexual|vih|sida|embarazo|mujeres|homofobia|trans|lgbti|menopausia/.test(t)) return 'salud-sexual';
+      if (/autismo|síndrome de down|sindrome de down|discapacidad|rehabilit|fisioterapia|auditiva|sordas|tourette/.test(t)) return 'discapacidad';
+      if (/médico|medico|enfermer|kinesi|nutric|farmacia|odontolog|fonoaudi|tens|samu|paraméd|paramed|laborator|auxiliar|funcionario|trabajador social|bombero/.test(t)) return 'profesionales';
+      if (/tuberculosis|hepatitis|lepra|rabia|dengue|polio|neumonia|neumonía|inocuidad|antimicrob|zoonosis|chagas|malaria|donante de sangre/.test(t)) return 'infecciosas';
+      if (/día mundial de la salud|salud bucal|agua|alimentación|alimentacion|higiene|vacunación|vacunacion|actividad física|actividad fisica|prevención|prevencion|seguridad del paciente|tabaco|autocuidado/.test(t)) return 'prevencion';
+      return 'otros';
+    };
+    const labels = { cancer:'Cáncer y oncología', 'salud-mental':'Salud mental', 'enfermedades-cronicas':'Enfermedades crónicas', prevencion:'Prevención y promoción', 'salud-sexual':'Salud sexual y reproductiva', profesionales:'Profesionales y servicios', discapacidad:'Discapacidad y rehabilitación', infecciosas:'Enfermedades infecciosas', otros:'Otras temáticas' };
+    days.forEach(day => {
+      const existing = day.querySelector('.source-link');
+      const query = normalize(day.textContent).replace(/^([0-9]{1,2}[-–][a-záéíóú]+(?:\s*\([^)]*\))?)\s*/i, '').replace(/origen \/ referencia ↗/i, '').trim();
+      const type = classify(query);
+      day.dataset.category = type;
+      if (!day.querySelector('.category-badge')) {
+        const badge = document.createElement('span'); badge.className = 'category-badge'; badge.textContent = labels[type]; day.appendChild(badge);
+      }
+      if (!existing) {
+        const link = document.createElement('a'); link.className = 'source-link'; link.href = 'https://es.wikipedia.org/w/index.php?search=' + encodeURIComponent(query); link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Origen / referencia ↗'; link.setAttribute('aria-label', 'Consultar el origen o referencia de ' + query + ' en Wikipedia'); day.appendChild(link);
+      }
+    });
+    function applyFilters() {
+      const term = normalize(search.value); const selected = category.value; let visible = 0;
+      months.forEach(month => {
+        let monthVisible = 0;
+        month.querySelectorAll('.day').forEach(day => {
+          const text = normalize(day.textContent); const matchesTerm = !term || text.includes(term); const matchesCategory = selected === 'all' || day.dataset.category === selected; const show = matchesTerm && matchesCategory;
+          day.classList.toggle('is-hidden', !show); if (show) { monthVisible++; visible++; }
+        });
+        month.classList.toggle('is-hidden', monthVisible === 0); if (monthVisible > 0 && (term || selected !== 'all')) month.open = true;
+      });
+      count.textContent = `${visible} ${visible === 1 ? 'efeméride encontrada' : 'efemérides encontradas'}`;
+      empty.style.display = visible ? 'none' : 'block';
+    }
+    search.addEventListener('input', applyFilters); category.addEventListener('change', applyFilters);
+    clear.addEventListener('click', () => { search.value = ''; category.value = 'all'; applyFilters(); search.focus(); });
+    document.getElementById('open-all').addEventListener('click', () => months.filter(m => !m.classList.contains('is-hidden')).forEach(m => m.open = true));
+    document.getElementById('close-all').addEventListener('click', () => months.forEach(m => m.open = false));
+    const currentMonth = new Intl.DateTimeFormat('es-CL', { month: 'long' }).format(new Date());
+    const current = document.getElementById(normalize(currentMonth)); if (current) current.open = true;
+    applyFilters();
+  });
+</script>
+</body>
+</html>
